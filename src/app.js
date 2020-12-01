@@ -72,7 +72,7 @@ async function getItem(event) {
   //Get all tasks belonging to a user
   if (itemType == "task" && !listId) {
     console.info(`Get all tasks for the particular user`);
-    databaseResponse = await Dynamo._get("CreatedBy", userId, "SK", "TASK", GSI2_NAME).catch((err) => {
+    databaseResponse = await Dynamo._get("CreatedBy", userId, "PK", "TASK", GSI2_NAME).catch((err) => {
       console.error(`Unable to get all tasks for user: ${userId}. Error JSON: ${err}`);
       return Responses._400(`Unable to get all tasks for user: ${userId}. Error JSON: ${err}`);
     });
