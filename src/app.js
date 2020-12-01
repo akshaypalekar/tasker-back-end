@@ -13,7 +13,7 @@ exports.lambdaHandler = async (event, context) => {
       return saveItem(event, context);
     case "GET":
       return getItem(event);
-    case "GET":
+    case "DELETE":
       return deleteItem(event);
     default:
       return Responses._400(`Unsupported method "${event.httpMethod}"`);
@@ -56,30 +56,16 @@ async function getItem(event) {
   //Get all the lists belonging to a user
   if (itemType == "list") {
     console.info(`Get lists for the user`);
-    databaseResponse = await Dynamo._get(
-      "PK",
-      "USER#" + userId,
-      "SK",
-      "LIST#",
-      ""
-    ).catch((err) => {
+    databaseResponse = await Dynamo._get("PK", "USER#" + userId, "SK", "LIST#", "").catch((err) => {
       console.error(`Unable to get the users lists. Error JSON: ${err}`);
-      return Responses._400(
-        `Unable to get the users lists. Error JSON: ${err}`
-      );
+      return Responses._400(`Unable to get the users lists. Error JSON: ${err}`);
     });
   }
 
   //Get tasks belonging to a particular list
   if (itemType == "task" && listId) {
     console.info(`Get tasks for the particular lists`);
-    databaseResponse = await Dynamo._get(
-      "SK",
-      "LIST#" + listId,
-      "PK",
-      "TASK",
-      GSI1_NAME
-    ).catch((err) => {
+    databaseResponse = await Dynamo._get("SK", "LIST#" + listId, "PK", "TASK", GSI1_NAME).catch((err) => {
       console.error(`Unable to get tasks for list. Error JSON: ${err}`);
       return Responses._400(`Unable to get tasks for list. Error JSON: ${err}`);
     });
@@ -88,13 +74,7 @@ async function getItem(event) {
   //Get all tasks belonging to a user
   if (itemType == "task" && !listId) {
     console.info(`Get all tasks for the particular user`);
-    databaseResponse = await Dynamo._get(
-      "CreatedBy",
-      userId,
-      "PK",
-      "TASK",
-      GSI2_NAME
-    ).catch((err) => {
+    databaseResponse = await Dynamo._get("CreatedBy", userId, "PK", "TASK", GSI2_NAME).catch((err) => {
       console.error(
         `Unable to get all tasks for user: ${userId}. Error JSON: ${err}`
       );
@@ -104,10 +84,7 @@ async function getItem(event) {
     });
   }
 
-  response = LambdaUtils._cleanUpResults(
-    databaseResponse,
-    itemType.toUpperCase()
-  );
+  response = LambdaUtils._cleanUpResults(databaseResponse, itemType.toUpperCase());
   console.log(`response from getItems ${response}`);
   return Responses._200(response);
 }
@@ -145,8 +122,7 @@ async function deleteItem(event) {
   }
 
   if (itemType == "task") {
-    await Dynamo._delete("TASK#" + itemId, "LIST#" + listId).catch(
-      (err) => {
+    await Dynamo._delete("TASK#" + itemId, "LIST#" + listId).catch((err) => {
         console.error(`Item not deleted. Error JSON: ${err}`);
         return Responses._400(`Item not deleted. Error JSON: ${err}`);
       }
