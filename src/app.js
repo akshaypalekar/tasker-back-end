@@ -22,6 +22,7 @@ async function saveItem(event, context) {
 
   //Add PK and SK to the item
   const item = LambdaUtils._createRecordToSave(body, uuid);
+  console.log(`Item passed to DynamoDB: ${JSON.stringify(item)}`);
 
   const databaseResponse = await Dynamo._save(item).catch((err) => {
     console.error(`Item not added. Error JSON: ${err}`);
@@ -30,5 +31,6 @@ async function saveItem(event, context) {
 
   //Remove PK and SK from the item
   const response = LambdaUtils._cleanUpResults([databaseResponse],item.ItemType);
+  console.log(`Response: ${JSON.stringify(response)}`);
   return Responses._200(response);
 }
