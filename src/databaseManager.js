@@ -21,7 +21,7 @@ const Dynamo = {
   _get: async (pkey, pValue, sKey, sValue) => {
     const params = {
       TableName: TABLE_NAME,
-      KeyConditionExpression: `${pkey} = :pValue AND BEGINS_WITH(${sKey}, :sValue)`,
+      KeyConditionExpression: `${pkey} = :pValue and begins_with(${sKey}, :sValue)`,
       ExpressionAttributeValues: {
         ":pValue": pValue,
         ":sValue": sValue,
