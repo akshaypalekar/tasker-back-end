@@ -13,6 +13,8 @@ exports.lambdaHandler = async (event, context) => {
       return saveItem(event, context);
     case "GET":
       return getItem(event);
+    case "GET":
+      return deleteItem(event);
     default:
       return Responses._400(`Unsupported method "${event.httpMethod}"`);
   }
@@ -54,16 +56,30 @@ async function getItem(event) {
   //Get all the lists belonging to a user
   if (itemType == "list") {
     console.info(`Get lists for the user`);
-    databaseResponse = await Dynamo._get("PK", "USER#" + userId, "SK", "LIST#", "").catch((err) => {
+    databaseResponse = await Dynamo._get(
+      "PK",
+      "USER#" + userId,
+      "SK",
+      "LIST#",
+      ""
+    ).catch((err) => {
       console.error(`Unable to get the users lists. Error JSON: ${err}`);
-      return Responses._400(`Unable to get the users lists. Error JSON: ${err}`);
+      return Responses._400(
+        `Unable to get the users lists. Error JSON: ${err}`
+      );
     });
   }
 
   //Get tasks belonging to a particular list
   if (itemType == "task" && listId) {
     console.info(`Get tasks for the particular lists`);
-    databaseResponse = await Dynamo._get("SK", "LIST#" + listId, "PK", "TASK", GSI1_NAME).catch((err) => {
+    databaseResponse = await Dynamo._get(
+      "SK",
+      "LIST#" + listId,
+      "PK",
+      "TASK",
+      GSI1_NAME
+    ).catch((err) => {
       console.error(`Unable to get tasks for list. Error JSON: ${err}`);
       return Responses._400(`Unable to get tasks for list. Error JSON: ${err}`);
     });
@@ -72,13 +88,71 @@ async function getItem(event) {
   //Get all tasks belonging to a user
   if (itemType == "task" && !listId) {
     console.info(`Get all tasks for the particular user`);
-    databaseResponse = await Dynamo._get("CreatedBy", userId, "PK", "TASK", GSI2_NAME).catch((err) => {
-      console.error(`Unable to get all tasks for user: ${userId}. Error JSON: ${err}`);
-      return Responses._400(`Unable to get all tasks for user: ${userId}. Error JSON: ${err}`);
+    databaseResponse = await Dynamo._get(
+      "CreatedBy",
+      userId,
+      "PK",
+      "TASK",
+      GSI2_NAME
+    ).catch((err) => {
+      console.error(
+        `Unable to get all tasks for user: ${userId}. Error JSON: ${err}`
+      );
+      return Responses._400(
+        `Unable to get all tasks for user: ${userId}. Error JSON: ${err}`
+      );
     });
   }
 
-  response = LambdaUtils._cleanUpResults(databaseResponse, itemType.toUpperCase());
+  response = LambdaUtils._cleanUpResults(
+    databaseResponse,
+    itemType.toUpperCase()
+  );
   console.log(`response from getItems ${response}`);
   return Responses._200(response);
+}
+
+async function deleteItem(event) {
+  console.info(`deleteItem function called with data`);
+
+  const userId = event.pathParameters.userId;
+  const itemId = event.queryStringParameters.itemId;
+  const listId = event.queryStringParameters.listId;
+  const itemType = event.queryStringParameters.itemType;
+
+  if (itemType == "list") {
+    console.log(`Deleting the list ${itemId}`);
+    await Dynamo._delete("USER#" + userId, "LIST#" + itemId).catch((err) => {
+        console.error(`Item not deleted. Error JSON: ${err}`);
+        return Responses._400(`Item not deleted. Error JSON: ${err}`);
+      }
+    );
+
+    console.log(`Get tasks related to the list ${itemId}`);
+    const items = await Dynamo._get("SK","LIST#" + listId, "PK","TASK", GSI1_NAME).catch((err) => {
+        console.error(`Unable to get tasks for list for deletion. Error JSON: ${err}`);
+        return Responses._400(`Unable to get tasks for list for deletion. Error JSON: ${err}`);
+    });
+
+    console.log(`Delete the tasks related to that list`);
+    // @ts-ignore
+    for (let i = 0; i < items.length; i++) {
+      await Dynamo._delete("USER#" + userId, "LIST#" + items[i].itemId).catch((err) => {
+        console.error(`Task ${items[i].itemId} not deleted. Error JSON: ${err}`);
+        return Responses._400(`Item not deleted. Error JSON: ${err}`);
+      });
+    }
+  }
+
+  if (itemType == "task") {
+    await Dynamo._delete("TASK#" + itemId, "LIST#" + listId).catch(
+      (err) => {
+        console.error(`Item not deleted. Error JSON: ${err}`);
+        return Responses._400(`Item not deleted. Error JSON: ${err}`);
+      }
+    );
+  }
+
+  console.log(`Response: ${itemType} deleted successfully`);
+  return Responses._200(`${itemType} deleted successfully`);
 }

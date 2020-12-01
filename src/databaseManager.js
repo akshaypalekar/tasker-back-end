@@ -12,14 +12,13 @@ const Dynamo = {
     const res = await docClient.put(params).promise();
 
     if (!res) {
-        throw Error(`There was an error inserting item: ${item} in table`);
+      throw Error(`There was an error inserting item: ${item} in table`);
     }
 
     return item;
   },
 
   _get: async (pkey, pValue, sKey, sValue, index) => {
-    
     let params;
 
     if (index !== "") {
@@ -45,7 +44,19 @@ const Dynamo = {
 
     const res = await docClient.query(params).promise();
 
-    return res.Items;
+    return res.Items || [];
+  },
+
+  _delete: async (pValue, sValue) => {
+    const params = {
+      TableName: TABLE_NAME,
+      Key: {
+        PK: pValue,
+        SK: sValue,
+      },
+    };
+
+    const res = await docClient.delete(params).promise();
   },
 };
 
