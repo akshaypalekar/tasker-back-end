@@ -116,8 +116,8 @@ async function deleteItem(event) {
                 console.log(`Delete the tasks related to that list`);
                 // @ts-ignore
                 for (let i = 0; i < items.length; i++) {
-                    console.log(`Deleting the task: ${items[i].itemId}`);
-                    await Dynamo._delete("USER#" + userId, "LIST#" + items[i].itemId).catch((err) => {
+                    console.log(`Deleting the task: ${items[i].ListID}`);
+                    await Dynamo._delete("USER#" + userId, "LIST#" + items[i].ListID).catch((err) => {
                         console.error(`Task ${items[i].itemId} not deleted. Error JSON: ${err}`);
                         return Responses._400(`Item not deleted. Error JSON: ${err}`);
                     });
