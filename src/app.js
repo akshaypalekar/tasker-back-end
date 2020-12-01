@@ -30,7 +30,7 @@ async function saveItem(event, context) {
   });
 
   //Remove PK and SK from the item
-  const response = LambdaUtils._cleanUpResults([databaseResponse],item.ItemType);
-  console.log(`Response: ${JSON.stringify(response)}`);
-  return Responses._200(response);
+  const response = LambdaUtils._cleanUpResults([databaseResponse], item.ItemType);
+  console.log(`Response: ${JSON.stringify(response[0])}`);
+  return Responses._200(response[0]);
 }
