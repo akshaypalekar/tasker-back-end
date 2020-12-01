@@ -8,6 +8,8 @@ exports.lambdaHandler = async (event, context) => {
   switch (event.httpMethod) {
     case "POST":
       return saveItem(event, context);
+    case "GET":
+      return getItem(event);
     default:
       return Responses._400(`Unsupported method "${event.httpMethod}"`);
   }
@@ -30,7 +32,31 @@ async function saveItem(event, context) {
   });
 
   //Remove PK and SK from the item
-  const response = LambdaUtils._cleanUpResults([databaseResponse], item.ItemType);
+  const response = LambdaUtils._cleanUpResults(
+    [databaseResponse],
+    item.ItemType
+  );
   console.log(`Response: ${JSON.stringify(response[0])}`);
   return Responses._200(response[0]);
+}
+
+async function getItem(event) {
+  console.info(`getItem function called with data: "${event.body}"`);
+
+  let databaseResponse, response;
+  const userId = event.pathParameters.userId;
+  //const listId = event.queryStringParameters.listId;
+  const itemType = event.queryStringParameters.itemType;
+
+  //Get all the lists belonging to a user
+  if (itemType == "list") {
+    databaseResponse = await Dynamo._get("PK", "USER#" + userId, "SK", "LIST#").catch((err) => {
+      console.error(`Unable to get the users lists. Error JSON: ${err}`);
+      return Responses._400(`Unable to get the users lists. Error JSON: ${err}`);
+    });
+
+    response = LambdaUtils._cleanUpResults(databaseResponse,'LIST');
+    console.log(`response from getItems ${JSON.stringify(response)}`);
+    return Responses._200(JSON.stringify(response));
+  }
 }

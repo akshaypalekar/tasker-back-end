@@ -17,6 +17,21 @@ const Dynamo = {
 
     return item;
   },
+
+  _get: async (pkey, pValue, sKey, sValue) => {
+    const params = {
+      TableName: TABLE_NAME,
+      KeyConditionExpression: `${pkey} = :pValue AND ${sKey} BEGINS_WITH :sValue`,
+      ExpressionAttributeValues: {
+        ":pValue": pValue,
+        ":sValue": sValue,
+      },
+    };
+
+    const res = await docClient.query(params).promise();
+
+    return res;
+  },
 };
 
 module.exports = Dynamo;
