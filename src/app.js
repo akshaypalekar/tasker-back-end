@@ -61,7 +61,7 @@ async function getItem(event) {
 
   //Get tasks belonging to a particular list
   if (itemType == "task") {
-    databaseResponse = await Dynamo._get("PK", "LIST#" + listId, "SK", "TASK", GSI1_NAME).catch((err) => {
+    databaseResponse = await Dynamo._get("SK", "LIST#" + listId, "PK", "TASK", GSI1_NAME).catch((err) => {
       console.log(`Unable to get tasks for list. Error JSON: ${err}`);
       return Responses._400(`Unable to get tasks for list. Error JSON: ${err}`);
     });
