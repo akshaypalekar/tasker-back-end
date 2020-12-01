@@ -55,8 +55,8 @@ async function getItem(event) {
       return Responses._400(`Unable to get the users lists. Error JSON: ${err}`);
     });
 
-    response = LambdaUtils._cleanUpResults(databaseResponse,'LIST');
+    response = LambdaUtils._cleanUpResults(databaseResponse, 'LIST');
     console.log(`response from getItems ${JSON.stringify(response)}`);
-    return Responses._200(JSON.stringify(response));
+    return Responses._200(response);
   }
 }

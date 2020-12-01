@@ -30,7 +30,7 @@ const Dynamo = {
 
     const res = await docClient.query(params).promise();
 
-    return res;
+    return res.Items;
   },
 };
 
