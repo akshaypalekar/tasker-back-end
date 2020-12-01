@@ -22,7 +22,8 @@ Resources:
         Variables:
           # Make table and index name accessible as environment variable from function code during execution
           TABLE_NAME: TaskerTable
-          INDEX_NAME: GetListTasks_GSI1
+          GSI1_NAME: GetListTasks_GSI1
+          GSI2_NAME: GetAllTasks_GSI2
       Events:
         Api:
           Type: Api
@@ -52,6 +53,17 @@ Resources:
         - IndexName: GetListTasks_GSI1
           KeySchema:
             - AttributeName: SK
+              KeyType: HASH
+            - AttributeName: PK
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
+        - IndexName: GetAllTasks_GSI2
+          KeySchema:
+            - AttributeName: CreatedBy
               KeyType: HASH
             - AttributeName: PK
               KeyType: RANGE

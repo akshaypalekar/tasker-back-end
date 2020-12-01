@@ -2,6 +2,9 @@ const Dynamo = require("./databaseManager");
 const Responses = require("./apiResponses");
 const LambdaUtils = require("./LambdaUtils");
 
+const GSI1_NAME = process.env.GSI1_NAME;
+const GSI2_NAME = process.env.GSI2_NAME;
+
 exports.lambdaHandler = async (event, context) => {
   console.info(`Request received: ${event.httpMethod}`);
 
@@ -45,18 +48,34 @@ async function getItem(event) {
 
   let databaseResponse, response;
   const userId = event.pathParameters.userId;
-  //const listId = event.queryStringParameters.listId;
+  const listId = event.queryStringParameters.listId;
   const itemType = event.queryStringParameters.itemType;
 
   //Get all the lists belonging to a user
   if (itemType == "list") {
-    databaseResponse = await Dynamo._get("PK", "USER#" + userId, "SK", "LIST#").catch((err) => {
+    databaseResponse = await Dynamo._get("PK", "USER#" + userId, "SK", "LIST#", "").catch((err) => {
       console.error(`Unable to get the users lists. Error JSON: ${err}`);
       return Responses._400(`Unable to get the users lists. Error JSON: ${err}`);
     });
-
-    response = LambdaUtils._cleanUpResults(databaseResponse, 'LIST');
-    console.log(`response from getItems ${JSON.stringify(response)}`);
-    return Responses._200(response);
   }
+
+  //Get tasks belonging to a particular list
+  if (itemType == "task") {
+    databaseResponse = await Dynamo._get("PK", "LIST#" + listId, "SK", "TASK", GSI1_NAME).catch((err) => {
+      console.log(`Unable to get tasks for list. Error JSON: ${err}`);
+      return Responses._400(`Unable to get tasks for list. Error JSON: ${err}`);
+    });
+  }
+
+  //Get all tasks belonging to a user
+  if (itemType == "task" && !listId) {
+    databaseResponse = await Dynamo.get("CreatedBy", userId, "SK", "TASK", GSI2_NAME).catch((err) => {
+      console.log(`Unable to get all tasks for user: ${userId}. Error JSON: ${err}`);
+      return Responses._400(`Unable to get all tasks for user: ${userId}. Error JSON: ${err}`);
+    });
+  }
+
+  response = LambdaUtils._cleanUpResults(databaseResponse, itemType.toUpperCase());
+  console.log(`response from getItems ${response}`);
+  return Responses._200(response);
 }
