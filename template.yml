@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  tasker-back-end
+Transform:
+- AWS::Serverless-2016-10-31
+
+Resources:
+  lambdaHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Lambda Function to interact with Dynamo DB
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the Tasker Table
+        - DynamoDBCrudPolicy:
+            TableName: TaskerTable
+      Environment:
+        Variables:
+          # Make table and index name accessible as environment variable from function code during execution
+          TABLE_NAME: TaskerTable
+          INDEX_NAME: GetListTasks_GSI1
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /users/{userId}/items
+            Method: ANY
+
+  # DynamoDB table to store items
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: TaskerTable
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+      GlobalSecondaryIndexes:
+        - IndexName: GetListTasks_GSI1
+          KeySchema:
+            - AttributeName: SK
+              KeyType: HASH
+            - AttributeName: PK
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 2
+            WriteCapacityUnits: 2
+
+Outputs:
+  WebEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
