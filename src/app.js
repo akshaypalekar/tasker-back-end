@@ -44,7 +44,7 @@ async function saveItem(event, context) {
 }
 
 async function getItem(event) {
-  console.info(`getItem function called with data: "${event.body}"`);
+  console.info(`getItem function called`);
 
   let databaseResponse, response;
   const userId = event.pathParameters.userId;
@@ -53,6 +53,7 @@ async function getItem(event) {
 
   //Get all the lists belonging to a user
   if (itemType == "list") {
+    console.info(`Get lists for the user`);
     databaseResponse = await Dynamo._get("PK", "USER#" + userId, "SK", "LIST#", "").catch((err) => {
       console.error(`Unable to get the users lists. Error JSON: ${err}`);
       return Responses._400(`Unable to get the users lists. Error JSON: ${err}`);
@@ -61,16 +62,18 @@ async function getItem(event) {
 
   //Get tasks belonging to a particular list
   if (itemType == "task") {
+    console.info(`Get tasks for the particular lists`);
     databaseResponse = await Dynamo._get("SK", "LIST#" + listId, "PK", "TASK", GSI1_NAME).catch((err) => {
-      console.log(`Unable to get tasks for list. Error JSON: ${err}`);
+      console.error(`Unable to get tasks for list. Error JSON: ${err}`);
       return Responses._400(`Unable to get tasks for list. Error JSON: ${err}`);
     });
   }
 
   //Get all tasks belonging to a user
   if (itemType == "task" && !listId) {
-    databaseResponse = await Dynamo.get("CreatedBy", userId, "SK", "TASK", GSI2_NAME).catch((err) => {
-      console.log(`Unable to get all tasks for user: ${userId}. Error JSON: ${err}`);
+    console.info(`Get all tasks for the particular user`);
+    databaseResponse = await Dynamo._get("CreatedBy", userId, "SK", "TASK", GSI2_NAME).catch((err) => {
+      console.error(`Unable to get all tasks for user: ${userId}. Error JSON: ${err}`);
       return Responses._400(`Unable to get all tasks for user: ${userId}. Error JSON: ${err}`);
     });
   }
