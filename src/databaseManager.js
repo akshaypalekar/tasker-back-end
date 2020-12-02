@@ -3,61 +3,62 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 const TABLE_NAME = process.env.TABLE_NAME;
 
 const Dynamo = {
-  _save: async (item) => {
-    const params = {
-      TableName: TABLE_NAME,
-      Item: item,
-    };
+    _save: (item) => {
+        const params = {
+            TableName: TABLE_NAME,
+            Item: item,
+        };
 
-    const res = await docClient.put(params).promise();
+        docClient.put(params, function (err, data) {
+            if (err) console.error(`There was an error inserting the item: ${err}`);
+            else return item;
+        });
+    },
 
-    if (!res) {
-      throw Error(`There was an error inserting item: ${item} in table`);
-    }
+    _get : (pkey, pValue, sKey, sValue, index) => {
+        let params;
 
-    return item;
-  },
+        if (index !== "") {
+            params = {
+                TableName: TABLE_NAME,
+                IndexName: index,
+                KeyConditionExpression: `${pkey} = :pValue and begins_with(${sKey}, :sValue)`,
+                ExpressionAttributeValues: {
+                    ":pValue": pValue,
+                    ":sValue": sValue,
+                },
+            };
+        } else {
+            params = {
+                TableName: TABLE_NAME,
+                KeyConditionExpression: `${pkey} = :pValue and begins_with(${sKey}, :sValue)`,
+                ExpressionAttributeValues: {
+                    ":pValue": pValue,
+                    ":sValue": sValue,
+                },
+            };
+        }
 
-  _get: async (pkey, pValue, sKey, sValue, index) => {
-    let params;
+        docClient.query(params, function (err, data) {
+            if (err) console.error(`There was an error getting the items: ${err}`);
+            else return data.Items || [];
+        });
+    },
 
-    if (index !== "") {
-      params = {
-        TableName: TABLE_NAME,
-        IndexName: index,
-        KeyConditionExpression: `${pkey} = :pValue and begins_with(${sKey}, :sValue)`,
-        ExpressionAttributeValues: {
-          ":pValue": pValue,
-          ":sValue": sValue,
-        },
-      };
-    } else {
-      params = {
-        TableName: TABLE_NAME,
-        KeyConditionExpression: `${pkey} = :pValue and begins_with(${sKey}, :sValue)`,
-        ExpressionAttributeValues: {
-          ":pValue": pValue,
-          ":sValue": sValue,
-        },
-      };
-    }
+    _delete: (pValue, sValue) => {
+        const params = {
+            TableName: TABLE_NAME,
+            Key: {
+                PK: pValue,
+                SK: sValue,
+            },
+        };
 
-    const res = await docClient.query(params).promise();
-
-    return res.Items || [];
-  },
-
-  _delete: async (pValue, sValue) => {
-    const params = {
-      TableName: TABLE_NAME,
-      Key: {
-        PK: pValue,
-        SK: sValue,
-      },
-    };
-
-    const res = await docClient.delete(params).promise();
-  },
+        docClient.delete(params, function (err, data) {
+            if (err) console.error(`There was an error deleting item: ${err}`);
+            else return data;
+        });
+    },
 };
 
 module.exports = Dynamo;
