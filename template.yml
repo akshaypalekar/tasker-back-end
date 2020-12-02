@@ -30,6 +30,11 @@ Resources:
           Properties:
             Path: /users/{userId}/items
             Method: ANY
+            Cors:
+              AllowMethods: "*"
+              AllowHeaders: "*"
+              AllowOrigin: "*"
+
 
   # DynamoDB table to store items
   DynamoDBTable:
