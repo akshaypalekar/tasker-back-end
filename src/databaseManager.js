@@ -3,19 +3,22 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 const TABLE_NAME = process.env.TABLE_NAME;
 
 const Dynamo = {
-    _save: (item) => {
+    _save: async (item) => {
         const params = {
             TableName: TABLE_NAME,
             Item: item,
         };
 
-        docClient.put(params, function (err, data) {
-            if (err) console.error(`There was an error inserting the item: ${err}`);
-            else return item;
-        });
+        const res = await docClient.put(params).promise();
+
+        if (!res) {
+            throw Error(`There was an error inserting the item`);
+        }
+
+        return item;
     },
 
-    _get : (pkey, pValue, sKey, sValue, index) => {
+    _get: async (pkey, pValue, sKey, sValue, index) => {
         let params;
 
         if (index !== "") {
@@ -39,13 +42,16 @@ const Dynamo = {
             };
         }
 
-        docClient.query(params, function (err, data) {
-            if (err) console.error(`There was an error getting the items: ${err}`);
-            else return data.Items || [];
-        });
+        const data = await docClient.query(params).promise();
+
+        if (!data || !data.Items) {
+            throw Error(`There was an error fetching the data`);
+        }
+
+        return data.Items;
     },
 
-    _delete: (pValue, sValue) => {
+    _delete: async (pValue, sValue) => {
         const params = {
             TableName: TABLE_NAME,
             Key: {
@@ -54,10 +60,11 @@ const Dynamo = {
             },
         };
 
-        docClient.delete(params, function (err, data) {
-            if (err) console.error(`There was an error deleting item: ${err}`);
-            else return data;
-        });
+        const res = docClient.delete(params).promise();
+
+        if (!res) {
+            throw Error(`There was an error deleting the item`);
+        }
     },
 };
 
