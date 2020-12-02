@@ -85,7 +85,6 @@ async function getItem(event) {
 async function deleteItem(event) {
     console.info(`deleteItem function called with data`);
 
-    let items;
     const userId = event.pathParameters.userId;
     const itemId = event.queryStringParameters.itemId;
     const listId = event.queryStringParameters.listId;
@@ -101,14 +100,14 @@ async function deleteItem(event) {
         console.log(`Get tasks related to the list: ${itemId}`);
         await Dynamo._get("SK", "LIST#" + itemId, "PK", "TASK#", GSI1_NAME)
         .then(async (items) =>{
-            items.map(async (item) => {
+            return Promise.all(items.map(async (item) => {
                 console.log(`Archiving the task: ${item.ItemID}`);
                 item.isArchived = true;
                 await Dynamo._update(item).catch((err) => {
                     console.error(`Task ${item.ItemID} not archived. Error JSON: ${err}`);
                     return null;
                 });
-            });
+            }));
         })
         .catch((err) => {
             console.error(`Unable to get tasks for list for deletion. Error JSON: ${err}`);
