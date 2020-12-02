@@ -42,9 +42,6 @@ async function saveItem(event, context) {
     return Responses._200(response[0]);
 }
 
-/**
- * @param {{ httpMethod?: any; pathParameters?: any; queryStringParameters?: any; }} event
- */
 async function getItem(event) {
     console.info(`getItem function called`);
 
@@ -85,9 +82,6 @@ async function getItem(event) {
     return Responses._200(response);
 }
 
-/**
- * @param {{ httpMethod?: any; pathParameters?: any; queryStringParameters?: any; }} event
- */
 async function deleteItem(event) {
     console.info(`deleteItem function called with data`);
 
@@ -108,9 +102,10 @@ async function deleteItem(event) {
         await Dynamo._get("SK", "LIST#" + itemId, "PK", "TASK#", GSI1_NAME)
         .then(async (items) =>{
             items.map(async (item) => {
-                console.log(`Deleting the task: ${item.ItemID}`);
-                await Dynamo._delete("TASK#" + item.ItemID, "LIST#" + itemId).catch((err) => {
-                    console.error(`Task ${item.ItemID} not deleted. Error JSON: ${err}`);
+                console.log(`Archiving the task: ${item.ItemID}`);
+                item.isArchived = true;
+                await Dynamo._update(item).catch((err) => {
+                    console.error(`Task ${item.ItemID} not archived. Error JSON: ${err}`);
                     return null;
                 });
             });

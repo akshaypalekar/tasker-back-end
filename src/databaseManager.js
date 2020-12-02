@@ -66,6 +66,19 @@ const Dynamo = {
             throw Error(`There was an error deleting the item`);
         }
     },
+
+    _update: async (item) =>{
+        const params = {
+            TableName: TABLE_NAME,
+            Item: item,
+        };
+
+        const res = await docClient.put(params).promise();
+
+        if (!res) {
+            throw Error(`There was an error updating the item`);
+        }
+    }
 };
 
 module.exports = Dynamo;
