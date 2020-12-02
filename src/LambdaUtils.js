@@ -1,6 +1,5 @@
 const LambdaUtils = {
-  _createRecordToSave: (item, uuid) => {
-    item.ItemID = uuid;
+  _createRecordToSave: (item) => {
 
     if (item.ItemType == "LIST") {
       item.PK = "USER#" + item.CreatedBy;

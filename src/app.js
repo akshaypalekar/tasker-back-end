@@ -15,6 +15,8 @@ exports.lambdaHandler = async (event, context) => {
             return getItem(event);
         case "DELETE":
             return deleteItem(event);
+        case "PUT":
+            return saveItem(event);
         default:
             return Responses._400(`Unsupported method "${event.httpMethod}"`);
     }
@@ -24,20 +26,25 @@ exports.lambdaHandler = async (event, context) => {
 async function saveItem(event, context) {
     console.info(`saveItem function called with data: ${event.body}`);
 
+    let action = 'update';
     const body = JSON.parse(event.body);
-    const uuid = context.awsRequestId;
+
+    if (event.httpMethod == "POST") {
+        body.ItemID = context.awsRequestId;
+        action = 'insert';
+    }
 
     //Add PK and SK to the item
-    const item = LambdaUtils._createRecordToSave(body, uuid);
+    const item = LambdaUtils._createRecordToSave(body);
     console.log(`Item passed to DynamoDB: ${JSON.stringify(item)}`);
 
-    const databaseResponse = await Dynamo._save(item).catch((err) => {
+    const databaseResponse = await Dynamo._save(item, action).catch((err) => {
         console.error(`Item not added. Error JSON: ${err}`);
         return null;
     });
 
     //Remove PK and SK from the item
-    const response = LambdaUtils._cleanUpResults([databaseResponse], item.ItemType);
+    const response = LambdaUtils._cleanUpResults([databaseResponse], body.ItemType);
     console.log(`Response: ${JSON.stringify(response[0])}`);
     return Responses._200(response[0]);
 }
@@ -97,22 +104,22 @@ async function deleteItem(event) {
             return null;
         })
 
-        console.log(`Get tasks related to the list: ${itemId}`);
+        console.log(`Getting tasks related to the list: ${itemId}`);
         await Dynamo._get("SK", "LIST#" + itemId, "PK", "TASK#", GSI1_NAME)
-        .then(async (items) =>{
-            return Promise.all(items.map(async (item) => {
-                console.log(`Archiving the task: ${item.ItemID}`);
-                item.isArchived = true;
-                await Dynamo._update(item).catch((err) => {
-                    console.error(`Task ${item.ItemID} not archived. Error JSON: ${err}`);
-                    return null;
-                });
-            }));
-        })
-        .catch((err) => {
-            console.error(`Unable to get tasks for list for deletion. Error JSON: ${err}`);
-            return null;
-        })
+            .then(async (items) => {
+                return Promise.all(items.map(async (item) => {
+                    console.info(`Archiving task: ${item.ItemID}`);
+                    item.isArchived = true;
+                    await Dynamo._update(item).catch((err) => {
+                        console.error(`Task ${item.ItemID} not archived. Error JSON: ${err}`);
+                        return null;
+                    });
+                }));
+            })
+            .catch((err) => {
+                console.error(`Unable to get tasks for list for deletion. Error JSON: ${err}`);
+                return null;
+            })
     }
 
     if (itemType == "task") {

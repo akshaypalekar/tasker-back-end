@@ -3,7 +3,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 const TABLE_NAME = process.env.TABLE_NAME;
 
 const Dynamo = {
-    _save: async (item) => {
+    _save: async (item, action) => {
         const params = {
             TableName: TABLE_NAME,
             Item: item,
@@ -12,7 +12,7 @@ const Dynamo = {
         const res = await docClient.put(params).promise();
 
         if (!res) {
-            throw Error(`There was an error inserting the item`);
+            throw Error(`There was an error ${action}ing the item`);
         }
 
         return item;
@@ -67,7 +67,7 @@ const Dynamo = {
         }
     },
 
-    _update: async (item) =>{
+    _update: async (item) => {
         const params = {
             TableName: TABLE_NAME,
             Item: item,
