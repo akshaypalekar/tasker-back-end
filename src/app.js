@@ -108,10 +108,10 @@ async function deleteItem(event) {
         await Dynamo._get("SK", "LIST#" + itemId, "PK", "TASK#", GSI1_NAME)
             .then(async (items) => {
                 return Promise.all(items.map(async (item) => {
-                    console.info(`Archiving task: ${item.ItemID}`);
+                    console.info(`Deleting related task: ${item.ItemID}`);
                     item.isArchived = true;
-                    await Dynamo._update(item).catch((err) => {
-                        console.error(`Task ${item.ItemID} not archived. Error JSON: ${err}`);
+                    await Dynamo._delete("TASK#" + item.ItemID, "LIST#" + itemId).catch((err) => {
+                        console.error(`Task ${item.ItemID} not deleted. Error JSON: ${err}`);
                         return null;
                     });
                 }));
