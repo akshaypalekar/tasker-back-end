@@ -56,6 +56,7 @@ async function getItem(event) {
     const userId = event.pathParameters.userId;
     const listId = event.queryStringParameters.listId;
     const itemType = event.queryStringParameters.itemType;
+    const archiveFlag = event.queryStringParameters.archiveFlag;
 
     //Get all the lists belonging to a user
     if (itemType == "list") {
@@ -78,11 +79,12 @@ async function getItem(event) {
     //Get all tasks belonging to a user
     if (itemType == "task" && !listId) {
         console.info(`Get all tasks for the particular user`);
-        databaseResponse = await Dynamo._get("CreatedBy", userId, "PK", "TASK", GSI2_NAME).catch((err) => {
+        databaseResponse = await Dynamo._get("CreatedBy", userId, "TaskArchive", "TASK#" + archiveFlag, GSI2_NAME).catch((err) => {
             console.error(`Unable to get all tasks for user: ${userId}. Error JSON: ${err}`);
             return null;
         });
     }
+
 
     response = LambdaUtils._cleanUpResults(databaseResponse, itemType.toUpperCase());
     console.log(`response from getItems ${response}`);

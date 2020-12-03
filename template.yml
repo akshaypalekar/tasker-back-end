@@ -77,13 +77,14 @@ Resources:
           KeySchema:
             - AttributeName: CreatedBy
               KeyType: HASH
-            - AttributeName: PK
+            - AttributeName: TaskArchive
               KeyType: RANGE
           Projection:
             ProjectionType: ALL
           ProvisionedThroughput:
             ReadCapacityUnits: 2
             WriteCapacityUnits: 2
+
 
 Outputs:
   WebEndpoint:

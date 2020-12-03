@@ -9,6 +9,7 @@ const LambdaUtils = {
     if (item.ItemType == "TASK") {
       item.PK = "TASK#" + item.ItemID;
       item.SK = "LIST#" + item.ListID;
+      item.TaskArchive = "TASK#" + item.isArchived;
     }
     return item;
   },
