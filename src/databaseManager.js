@@ -3,7 +3,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 const TABLE_NAME = process.env.TABLE_NAME;
 
 const Dynamo = {
-    _save: async (item, action) => {
+    _save: async (item) => {
         const params = {
             TableName: TABLE_NAME,
             Item: item,
@@ -12,7 +12,7 @@ const Dynamo = {
         const res = await docClient.put(params).promise();
 
         if (!res) {
-            throw Error(`There was an error ${action}ing the item`);
+            throw Error(`There was an error inserting the item`);
         }
 
         return item;
@@ -66,19 +66,6 @@ const Dynamo = {
             throw Error(`There was an error deleting the item`);
         }
     },
-
-    _update: async (item) => {
-        const params = {
-            TableName: TABLE_NAME,
-            Item: item,
-        };
-
-        const res = await docClient.put(params).promise();
-
-        if (!res) {
-            throw Error(`There was an error updating the item`);
-        }
-    }
 };
 
 module.exports = Dynamo;

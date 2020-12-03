@@ -16,7 +16,7 @@ exports.lambdaHandler = async (event, context) => {
         case "DELETE":
             return deleteItem(event);
         case "PUT":
-            return saveItem(event);
+            return updateItem(event);
         default:
             return Responses._400(`Unsupported method "${event.httpMethod}"`);
     }
@@ -26,19 +26,14 @@ exports.lambdaHandler = async (event, context) => {
 async function saveItem(event, context) {
     console.info(`saveItem function called with data: ${event.body}`);
 
-    let action = 'update';
     const body = JSON.parse(event.body);
-
-    if (event.httpMethod == "POST") {
-        body.ItemID = context.awsRequestId;
-        action = 'insert';
-    }
+    body.ItemID = context.awsRequestId;
 
     //Add PK and SK to the item
     const item = LambdaUtils._createRecordToSave(body);
     console.log(`Item passed to DynamoDB: ${JSON.stringify(item)}`);
 
-    const databaseResponse = await Dynamo._save(item, action).catch((err) => {
+    const databaseResponse = await Dynamo._save(item).catch((err) => {
         console.error(`Item not added. Error JSON: ${err}`);
         return null;
     });
@@ -133,4 +128,25 @@ async function deleteItem(event) {
 
     console.log(`Response: ${itemType} deleted successfully`);
     return Responses._200(`${itemType} deleted successfully`);
+}
+
+
+async function updateItem(event) {
+    console.info(`saveItem function called with data: ${event.body}`);
+
+    const body = JSON.parse(event.body);
+
+    //Add PK and SK to the item
+    const item = LambdaUtils._createRecordToSave(body);
+    console.log(`Item passed to DynamoDB: ${JSON.stringify(item)}`);
+
+    const databaseResponse = await Dynamo._save(item).catch((err) => {
+        console.error(`Item not added. Error JSON: ${err}`);
+        return null;
+    });
+
+    //Remove PK and SK from the item
+    const response = LambdaUtils._cleanUpResults([databaseResponse], body.ItemType);
+    console.log(`Response: ${JSON.stringify(response[0])}`);
+    return Responses._200(response[0]);
 }
