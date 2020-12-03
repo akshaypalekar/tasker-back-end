@@ -53,6 +53,8 @@ Resources:
           AttributeType: S
         - AttributeName: CreatedBy
           AttributeType: S
+        - AttributeName: TaskArchive
+          AttributeType: S
       KeySchema:
         - AttributeName: PK
           KeyType: HASH
