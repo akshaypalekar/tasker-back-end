@@ -16,7 +16,7 @@ Globals:
         DefaultAuthorizer: MyCognitoAuthorizer
         Authorizers:
           MyCognitoAuthorizer:
-            UserPoolArn: !GetAtt MyCognitoUserPool.Arn
+            UserPoolArn: !GetAtt TaskerUserPool.Arn
 
 
 Resources:
@@ -46,10 +46,10 @@ Resources:
             Path: /users/{userId}/items
             Method: ANY
 
-  MyCognitoUserPool:
+  TaskerUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: !Ref CognitoUserPoolName
+      UserPoolName: TaskerUserPool
       Policies:
         PasswordPolicy:
           MinimumLength: 8
@@ -60,11 +60,11 @@ Resources:
           Name: email
           Required: false
   
-  MyCognitoUserPoolClient:
+  TaskerUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
-      UserPoolId: !Ref MyCognitoUserPool
-      ClientName: !Ref CognitoUserPoolClientName
+      UserPoolId: !Ref TaskerUserPool
+      ClientName: TaskerUserPoolClient
       GenerateSecret: false
 
   # DynamoDB table to store items
