@@ -66,6 +66,24 @@ Resources:
       UserPoolId: !Ref TaskerUserPool
       ClientName: TaskerUserPoolClient
       GenerateSecret: false
+      SupportedIdentityProviders:
+        - COGNITO
+      CallbackURLs: http://localhost:4200
+      LogoutURLs: http://localhost:4200
+      AllowedOauthFlowsUserPoolClient: true
+      AllowedOauthFlows:
+        - code
+        - implicit
+      AllowedOauthScopes:
+        - email
+        - opendid
+        - profile
+
+  UserPooldomain:
+    Type: AWS::Cognito::UserPooldomain
+    Properties:
+      Domain: TaskerDomain
+      UserPoolId: !Ref TaskerUserPool
 
   # DynamoDB table to store items
   DynamoDBTable:
