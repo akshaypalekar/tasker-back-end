@@ -79,8 +79,8 @@ Resources:
         - opendid
         - profile
 
-  UserPooldomain:
-    Type: AWS::Cognito::UserPooldomain
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
     Properties:
       Domain: TaskerDomain
       UserPoolId: !Ref TaskerUserPool
