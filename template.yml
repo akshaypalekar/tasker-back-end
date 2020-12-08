@@ -68,8 +68,10 @@ Resources:
       GenerateSecret: false
       SupportedIdentityProviders:
         - COGNITO
-      CallbackURLs: http://localhost:4200
-      LogoutURLs: http://localhost:4200
+      CallbackURLs: 
+        - http://localhost:4200
+      LogoutURLs: 
+        - http://localhost:4200
       AllowedOAuthFlowsUserPoolClient: true
       AllowedOAuthFlows:
         - code
