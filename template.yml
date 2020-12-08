@@ -82,7 +82,7 @@ Resources:
   UserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
-      Domain: TaskerDomain
+      Domain: taskerdomain
       UserPoolId: !Ref TaskerUserPool
 
   # DynamoDB table to store items
