@@ -78,7 +78,7 @@ Resources:
         - implicit
       AllowedOAuthScopes:
         - email
-        - opendid
+        - openid
         - profile
 
   UserPoolDomain:
