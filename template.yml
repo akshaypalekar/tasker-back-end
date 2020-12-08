@@ -70,11 +70,11 @@ Resources:
         - COGNITO
       CallbackURLs: http://localhost:4200
       LogoutURLs: http://localhost:4200
-      AllowedOauthFlowsUserPoolClient: true
-      AllowedOauthFlows:
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows:
         - code
         - implicit
-      AllowedOauthScopes:
+      AllowedOAuthScopes:
         - email
         - opendid
         - profile
