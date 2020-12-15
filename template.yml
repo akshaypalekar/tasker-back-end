@@ -11,8 +11,7 @@ Globals:
     Cors:
       AllowMethods: "'*'"
       AllowHeaders: "'*'"
-      AllowOrigin: "'http://localhost:4300'"
-      AllowCredentials: true
+      AllowOrigin: "'*'"
     Auth:
         DefaultAuthorizer: MyCognitoAuthorizer
         Authorizers:
