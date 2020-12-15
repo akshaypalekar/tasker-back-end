@@ -12,6 +12,7 @@ Globals:
       AllowMethods: "'*'"
       AllowHeaders: "'*'"
       AllowOrigin: "'*'"
+      AllowCredentials: true
     Auth:
         DefaultAuthorizer: MyCognitoAuthorizer
         Authorizers:
