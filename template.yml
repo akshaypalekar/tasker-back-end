@@ -8,6 +8,12 @@ Globals:
   Api:
     # enable CORS; to make more specific, change the origin wildcard
     # to a particular domain name, e.g. "'www.example.com'"
+    Cors:
+      AllowMethods: "'*'"
+      AllowHeaders: "'*'"
+      AllowOrigin: "'http://localhost:4200'"
+      MaxAge: "'600'"
+      AllowCredentials: True
     Auth:
         DefaultAuthorizer: MyCognitoAuthorizer
         Authorizers:
@@ -41,7 +47,6 @@ Resources:
           Properties:
             Path: /users/{userId}/items
             Method: ANY
-            cors: true
 
   TaskerUserPool:
     Type: AWS::Cognito::UserPool
