@@ -8,13 +8,16 @@ Globals:
   Api:
     # enable CORS; to make more specific, change the origin wildcard
     # to a particular domain name, e.g. "'www.example.com'"
-    Cors: '*'
+    Cors:
+      AllowMethods: "'*'"
+      AllowHeaders: "'*'"
+      AllowOrigin: "'*'"
     Auth:
         DefaultAuthorizer: MyCognitoAuthorizer
-        AddDefaultAuthorizerToCorsPreflight: False
         Authorizers:
           MyCognitoAuthorizer:
             UserPoolArn: !GetAtt TaskerUserPool.Arn
+        AddDefaultAuthorizerToCorsPreflight: False
 
 
 Resources:
