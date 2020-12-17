@@ -20,6 +20,7 @@ Globals:
 
 
 Resources:
+
   lambdaHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -45,6 +46,15 @@ Resources:
           Properties:
             Path: /users/{userId}/items
             Method: ANY
+
+  GatewayResponseDefault4XX:
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      ResponseParameters:
+        gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+        gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+      ResponseType: DEFAULT_4XX
+      RestApiId: !Ref Api
 
   TaskerUserPool:
     Type: AWS::Cognito::UserPool
