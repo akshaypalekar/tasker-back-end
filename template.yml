@@ -54,7 +54,9 @@ Resources:
         gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
         gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
       ResponseType: DEFAULT_4XX
-      RestApiId: !Ref Api
+      RestApiId:
+        Ref: 'Api'
+      StatusCode: '401'
 
   TaskerUserPool:
     Type: AWS::Cognito::UserPool
