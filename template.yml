@@ -4,7 +4,6 @@ Description: >-
 Transform:
 - AWS::Serverless-2016-10-31
 
-
 Resources:
   lambdaHandlerFunction:
     Type: AWS::Serverless::Function
@@ -36,6 +35,8 @@ Resources:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: TaskerUserPool
+      AutoVerifiedAttributes:
+        - phone_number
       Policies:
         PasswordPolicy:
           MinimumLength: 8
@@ -73,7 +74,6 @@ Resources:
       Domain: taskerdomain
       UserPoolId: !Ref TaskerUserPool
 
-  # DynamoDB table to store items
   DynamoDBTable:
     Type: AWS::DynamoDB::Table
     Properties:

@@ -130,7 +130,6 @@ async function deleteItem(event) {
     return Responses._200(`${itemType} deleted successfully`);
 }
 
-
 async function updateItem(event) {
     console.info(`saveItem function called with data: ${event.body}`);
 
