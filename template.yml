@@ -36,7 +36,7 @@ Resources:
     Properties:
       UserPoolName: TaskerUserPool
       AutoVerifiedAttributes:
-        - phone_number
+        - email
       Policies:
         PasswordPolicy:
           MinimumLength: 8
