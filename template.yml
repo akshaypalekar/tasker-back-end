@@ -4,15 +4,6 @@ Description: >-
 Transform:
 - AWS::Serverless-2016-10-31
 
-Globals:
-  Api:
-    # enable CORS; to make more specific, change the origin wildcard
-    # to a particular domain name, e.g. "'www.example.com'"
-    Cors:
-      AllowMethods: "'*'"
-      AllowHeaders: "'*'"
-      AllowOrigin: "'*'"
-
 Resources:
   lambdaHandlerFunction:
     Type: AWS::Serverless::Function
@@ -24,12 +15,10 @@ Resources:
       Timeout: 100
       Description: Lambda Function to interact with Dynamo DB
       Policies:
-        # Give Create/Read/Update/Delete Permissions to the Tasker Table
         - DynamoDBCrudPolicy:
             TableName: TaskerTable
       Environment:
         Variables:
-          # Make table and index name accessible as environment variable from function code during execution
           TABLE_NAME: TaskerTable
           GSI1_NAME: GetListTasks_GSI1
           GSI2_NAME: GetAllTasks_GSI2

@@ -1,5 +1,11 @@
+const TABLE_NAME = process.env.TABLE_NAME;
+const GSI1_NAME = process.env.GSI1_NAME;
+const GSI2_NAME = process.env.GSI2_NAME;
+
 const LambdaUtils = {
-  _createRecordToSave: (item) => {
+
+  _createQueryBuilder: (item) => {
+    let params = {};
 
     if (item.ItemType == "LIST") {
       item.PK = "USER#" + item.CreatedBy;
@@ -11,7 +17,66 @@ const LambdaUtils = {
       item.SK = "LIST#" + item.ListID;
       item.TaskArchive = "TASK#" + item.isArchived;
     }
-    return item;
+
+    params = {
+      TableName: TABLE_NAME,
+      Item: item,
+    };
+
+    return params;
+  },
+
+  _getQueryBuilder: (itemType, userId, listId, archiveFlag) => {
+    let params = {}
+
+    if (itemType == "list") {
+      params = {
+        TableName: TABLE_NAME,
+        KeyConditionExpression: `PK = :pValue and begins_with(SK, :sValue)`,
+        ExpressionAttributeValues: {
+          ":pValue": "USER#" + userId,
+          ":sValue": "LIST#",
+        },
+      };
+    }
+
+    if (itemType == "task" && listId) {
+      params = {
+        TableName: TABLE_NAME,
+        IndexName: GSI1_NAME,
+        KeyConditionExpression: `SK = :pValue and begins_with(PK, :sValue)`,
+        ExpressionAttributeValues: {
+          ":pValue": "LIST#" + listId,
+          ":sValue": "TASK#",
+        },
+      };
+    }
+
+    if (itemType == "task" && listId == "") {
+      params = {
+        TableName: TABLE_NAME,
+        IndexName: GSI2_NAME,
+        KeyConditionExpression: `CreatedBy = :pValue and begins_with(TaskArchive, :sValue)`,
+        ExpressionAttributeValues: {
+          ":pValue": userId,
+          ":sValue": "TASK#" + archiveFlag,
+        },
+      };
+    }
+
+    return params;
+  },
+
+  _deleteQueryBuilder: (pValue, sValue) => {
+    const params = {
+      TableName: TABLE_NAME,
+      Key: {
+        PK: pValue,
+        SK: sValue,
+      },
+    };
+
+    return params;
   },
 
   _cleanUpResults: (response, itemType) => {
@@ -50,6 +115,7 @@ const LambdaUtils = {
       });
     }
   },
+
 };
 
 module.exports = LambdaUtils;

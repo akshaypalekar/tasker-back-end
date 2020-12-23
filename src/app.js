@@ -2,9 +2,6 @@ const Dynamo = require("./databaseManager");
 const Responses = require("./apiResponses");
 const LambdaUtils = require("./LambdaUtils");
 
-const GSI1_NAME = process.env.GSI1_NAME;
-const GSI2_NAME = process.env.GSI2_NAME;
-
 exports.lambdaHandler = async (event, context) => {
     console.info(`Request received: ${event.httpMethod}`);
 
@@ -30,10 +27,9 @@ async function saveItem(event, context) {
     body.ItemID = context.awsRequestId;
 
     //Add PK and SK to the item
-    const item = LambdaUtils._createRecordToSave(body);
-    console.log(`Item passed to DynamoDB: ${JSON.stringify(item)}`);
+    const params = LambdaUtils._createQueryBuilder(body);
 
-    const databaseResponse = await Dynamo._save(item).catch((err) => {
+    const databaseResponse = await Dynamo._save(params).catch((err) => {
         console.error(`Item not added. Error JSON: ${err}`);
         return null;
     });
@@ -49,37 +45,16 @@ async function getItem(event) {
 
     let databaseResponse, response;
     const userId = event.pathParameters.userId;
-    const listId = event.queryStringParameters.listId;
-    const itemType = event.queryStringParameters.itemType;
-    const archiveFlag = event.queryStringParameters.archiveFlag;
+    const listId = event.queryStringParameters.listId || "";
+    const itemType = event.queryStringParameters.itemType || "";
+    const archiveFlag = event.queryStringParameters.archiveFlag || "";
 
-    //Get all the lists belonging to a user
-    if (itemType == "list") {
-        console.info(`Get lists for the user`);
-        databaseResponse = await Dynamo._get("PK", "USER#" + userId, "SK", "LIST#", "").catch((err) => {
-            console.error(`Unable to get the users lists. Error JSON: ${err}`);
-            return null;
-        });
-    }
+    const params = LambdaUtils._getQueryBuilder(itemType, userId, listId, archiveFlag);
 
-    //Get tasks belonging to a particular list
-    if (itemType == "task" && listId) {
-        console.info(`Get tasks for the particular lists`);
-        databaseResponse = await Dynamo._get("SK", "LIST#" + listId, "PK", "TASK#", GSI1_NAME).catch((err) => {
-            console.error(`Unable to get tasks for list. Error JSON: ${err}`);
-            return null;
-        });
-    }
-
-    //Get all tasks belonging to a user
-    if (itemType == "task" && !listId) {
-        console.info(`Get all tasks for the particular user`);
-        databaseResponse = await Dynamo._get("CreatedBy", userId, "TaskArchive", "TASK#" + archiveFlag, GSI2_NAME).catch((err) => {
-            console.error(`Unable to get all tasks for user: ${userId}. Error JSON: ${err}`);
-            return null;
-        });
-    }
-
+    databaseResponse = await Dynamo._get(params).catch((err) => {
+        console.error(`Unable to get items. Error JSON: ${err}`);
+        return null;
+    });
 
     response = LambdaUtils._cleanUpResults(databaseResponse, itemType.toUpperCase());
     console.log(`response from getItems ${response}`);
@@ -89,6 +64,7 @@ async function getItem(event) {
 async function deleteItem(event) {
     console.info(`deleteItem function called with data`);
 
+    let deleteParams;
     const userId = event.pathParameters.userId;
     const itemId = event.queryStringParameters.itemId;
     const listId = event.queryStringParameters.listId;
@@ -96,18 +72,21 @@ async function deleteItem(event) {
 
     if (itemType == "list") {
         console.log(`Deleting the list ${itemId}`);
-        await Dynamo._delete("USER#" + userId, "LIST#" + itemId).catch((err) => {
+        deleteParams = LambdaUtils._deleteQueryBuilder("USER#" + userId, "LIST#" + itemId);
+        await Dynamo._delete(deleteParams).catch((err) => {
             console.error(`Item not deleted. Error JSON: ${err}`);
             return null;
-        })
+        });
+
+        const getParams = LambdaUtils._getQueryBuilder(itemType, userId, listId, "")
 
         console.log(`Getting tasks related to the list: ${itemId}`);
-        await Dynamo._get("SK", "LIST#" + itemId, "PK", "TASK#", GSI1_NAME)
-            .then(async (items) => {
+        await Dynamo._get(getParams).then(async (items) => {
                 return Promise.all(items.map(async (item) => {
                     console.info(`Deleting related task: ${item.ItemID}`);
                     item.isArchived = true;
-                    await Dynamo._delete("TASK#" + item.ItemID, "LIST#" + itemId).catch((err) => {
+                    deleteParams = LambdaUtils._deleteQueryBuilder("TASK#" + item.ItemID, "LIST#" + itemId);
+                    await Dynamo._delete(deleteParams).catch((err) => {
                         console.error(`Task ${item.ItemID} not deleted. Error JSON: ${err}`);
                         return null;
                     });
@@ -116,11 +95,13 @@ async function deleteItem(event) {
             .catch((err) => {
                 console.error(`Unable to get tasks for list for deletion. Error JSON: ${err}`);
                 return null;
-            })
+            });
     }
 
     if (itemType == "task") {
-        await Dynamo._delete("TASK#" + itemId, "LIST#" + listId).catch((err) => {
+        deleteParams = LambdaUtils._deleteQueryBuilder("TASK#" + itemId, "LIST#" + listId);
+
+        await Dynamo._delete(deleteParams).catch((err) => {
             console.error(`Item not deleted. Error JSON: ${err}`);
             return null;
         });
@@ -136,7 +117,7 @@ async function updateItem(event) {
     const body = JSON.parse(event.body);
 
     //Add PK and SK to the item
-    const item = LambdaUtils._createRecordToSave(body);
+    const item = LambdaUtils._createQueryBuilder(body);
     console.log(`Item passed to DynamoDB: ${JSON.stringify(item)}`);
 
     const databaseResponse = await Dynamo._save(item).catch((err) => {
