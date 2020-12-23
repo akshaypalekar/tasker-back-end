@@ -4,6 +4,7 @@ const LambdaUtils = require("./LambdaUtils");
 
 exports.lambdaHandler = async (event, context) => {
     console.info(`Request received: ${event.httpMethod}`);
+    console.info(`Authorization Token: ${event.authorizationToken}`);
 
     switch (event.httpMethod) {
         case "POST":
@@ -117,10 +118,10 @@ async function updateItem(event) {
     const body = JSON.parse(event.body);
 
     //Add PK and SK to the item
-    const item = LambdaUtils._createQueryBuilder(body);
-    console.log(`Item passed to DynamoDB: ${JSON.stringify(item)}`);
+    const params = LambdaUtils._createQueryBuilder(body);
+    console.log(`Item passed to DynamoDB: ${JSON.stringify(params)}`);
 
-    const databaseResponse = await Dynamo._save(item).catch((err) => {
+    const databaseResponse = await Dynamo._save(params).catch((err) => {
         console.error(`Item not added. Error JSON: ${err}`);
         return null;
     });
