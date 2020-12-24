@@ -5,8 +5,6 @@ const Responses = {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Methods': '*',
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Authorization'
-                
             },
             statusCode: 200,
             body: JSON.stringify(data),
@@ -19,7 +17,6 @@ const Responses = {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Methods': '*',
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Authorization'
             },
             statusCode: 400,
             body: JSON.stringify(data),
