@@ -116,8 +116,9 @@ const LambdaUtils = {
     }
   },
 
-  _buildIAMPolicy: (effect, resource) => {
+  _buildIAMPolicy: (principalId, effect, resource) => {
     const policy = {
+      principalId: principalId,
       policyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -128,6 +129,11 @@ const LambdaUtils = {
           },
         ],
       },
+      context: [{
+        stringKey: "stringval custom anything can go here",
+        numberKey: 123,
+        booleanKey: true
+      }],
     };
   
     return policy;

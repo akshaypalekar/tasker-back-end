@@ -9,11 +9,14 @@ exports.lambdaHandler = async (event) => {
     console.info(`Authorization Token: ${token}`);
     console.info(`Method Arn: ${methodArn}`);
 
-    const principalId = 'user';
-    const policyDocument = LambdaUtils._buildIAMPolicy('Allow' , methodArn);
-    
-    return {
-        principalId,
-        policyDocument
+    switch (token.toLowerCase()) {
+        case 'allow':
+            return LambdaUtils._buildIAMPolicy('user', 'Allow' , methodArn);
+        case 'deny':
+            return LambdaUtils._buildIAMPolicy('user', 'Deny' , methodArn);;
+        case 'unauthorized':
+            return "Unauthorized";   // Return a 401 Unauthorized response
+        default:
+            return "Error: Invalid token"; 
     }
 };
