@@ -15,7 +15,6 @@ Resources:
         Authorizers: 
           LambdaTokenAuthorizer:
             FunctionArn: !GetAtt lambdaAuthFunction.Arn
-        AddDefaultAuthorizerToCorsPreflight: false
             
 
   lambdaHandlerFunction:
