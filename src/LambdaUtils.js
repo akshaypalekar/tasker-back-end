@@ -116,9 +116,8 @@ const LambdaUtils = {
     }
   },
 
-  _buildIAMPolicy: (userId, effect, resource) => {
+  _buildIAMPolicy: (effect, resource) => {
     const policy = {
-      principalId: userId,
       policyDocument: {
         Version: '2012-10-17',
         Statement: [

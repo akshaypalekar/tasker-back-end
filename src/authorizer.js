@@ -10,7 +10,11 @@ exports.lambdaHandler = async (event, context) => {
     console.info(`Method Arn: ${methodArn}`);
 
     
-    const policyDocument = LambdaUtils._buildIAMPolicy('user', 'Allow' , methodArn);
+    const policyDocument = LambdaUtils._buildIAMPolicy('Allow' , methodArn);
+    const principalId = 'user';
     
-    return policyDocument;
+    return {
+        principalId,
+        policyDocument
+    }
 };
