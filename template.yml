@@ -4,19 +4,18 @@ Description: >-
 Transform:
 - AWS::Serverless-2016-10-31
 
-Globals:
-  Api:
-    Cors:
-      AllowMethods: "'*'"
-      AllowHeaders: "'*'"
-      AllowOrigin: "'*'"
-    Auth:
+Resources:
+
+  TaskerApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      Auth:
         DefaultAuthorizer: LambdaTokenAuthorizer
         Authorizers:
           LambdaTokenAuthorizer:
             FunctionArn: !GetAtt lambdaAuthFunction.Arn
 
-Resources:
   lambdaHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -38,6 +37,7 @@ Resources:
         Api:
           Type: Api
           Properties:
+            RestApiId: !Ref TaskerApi
             Path: /users/{userId}/items
             Method: ANY
 
