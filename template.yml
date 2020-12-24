@@ -6,18 +6,15 @@ Transform:
 
 Globals:
   Api:
-    # enable CORS; to make more specific, change the origin wildcard
-    # to a particular domain name, e.g. "'www.example.com'"
     Cors:
       AllowMethods: "'*'"
       AllowHeaders: "'*'"
       AllowOrigin: "'*'"
     Auth:
-        DefaultAuthorizer: MyCognitoAuthorizer
+        DefaultAuthorizer: LambdaTokenAuthorizer
         Authorizers:
-          MyCognitoAuthorizer:
-            UserPoolArn: !GetAtt TaskerUserPool.Arn
-        AddDefaultAuthorizerToCorsPreflight: False
+          LambdaTokenAuthorizer:
+            FunctionArn: !GetAtt lambdaAuthFunction.Arn
 
 Resources:
   lambdaHandlerFunction:
@@ -44,6 +41,13 @@ Resources:
             Path: /users/{userId}/items
             Method: ANY
 
+  lambdaAuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: authorizer.lambdaHandler
+      Runtime: nodejs12.x
+      
   TaskerUserPool:
     Type: AWS::Cognito::UserPool
     Properties:

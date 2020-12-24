@@ -4,7 +4,6 @@ const LambdaUtils = require("./LambdaUtils");
 
 exports.lambdaHandler = async (event, context) => {
     console.info(`Request received: ${event.httpMethod}`);
-    console.info(`Authorization Token: ${event.authorizationToken}`);
 
     switch (event.httpMethod) {
         case "POST":
