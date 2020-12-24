@@ -5,16 +5,16 @@ Transform:
 - AWS::Serverless-2016-10-31
 
 Resources:
-
-  TaskerApi:
+  MyApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: dev
       Auth:
         DefaultAuthorizer: LambdaTokenAuthorizer
-        Authorizers:
+        Authorizers: 
           LambdaTokenAuthorizer:
             FunctionArn: !GetAtt lambdaAuthFunction.Arn
+            
 
   lambdaHandlerFunction:
     Type: AWS::Serverless::Function
@@ -34,10 +34,10 @@ Resources:
           GSI1_NAME: GetListTasks_GSI1
           GSI2_NAME: GetAllTasks_GSI2
       Events:
-        Api:
+        HelloAPI:
           Type: Api
           Properties:
-            RestApiId: !Ref TaskerApi
+            RestApiId: !Ref MyApi
             Path: /users/{userId}/items
             Method: ANY
 

@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
+            "name": "tasker-back-end:lambdaHandlerFunction",
+            "invokeTarget": {
+                "target": "template",
+                "templatePath": "template.yml",
+                "logicalId": "lambdaHandlerFunction"
+            },
+            "lambda": {
+                "payload": {},
+                "environmentVariables": {}
+            }
+        }
+    ]
+}
