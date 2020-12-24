@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const jwt = require('jsonwebtoken');
 const jwksClient = require('jwks-client');
 const util = require('util');
