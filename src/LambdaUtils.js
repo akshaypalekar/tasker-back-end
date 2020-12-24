@@ -116,9 +116,8 @@ const LambdaUtils = {
     }
   },
 
-  _buildIAMPolicy: (principalId, effect, resource) => {
+  _buildIAMPolicy: (effect, resource) => {
     const policy = {
-      principalId: principalId,
       policyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -129,14 +128,31 @@ const LambdaUtils = {
           },
         ],
       },
-      context: {
-        stringKey: "stringval custom anything can go here",
-        numberKey: 123,
-        booleanKey: true
-      },
     };
-  
+
     return policy;
+  },
+
+  __getToken: (event) => {
+
+    if (!event.type || event.type !== 'TOKEN') {
+      throw new Error('Expected "event.type" parameter to have value "TOKEN"');
+    }
+
+    const tokenString = event.authorizationToken;
+
+    if (!tokenString) {
+      throw new Error('Expected "event.authorizationToken" parameter to be set');
+    }
+
+    const match = tokenString.match(/^Bearer (.*)$/);
+
+    if (!match || match.length < 2) {
+      throw new Error(`Invalid Authorization token - ${tokenString} does not match "Bearer .*"`);
+    }
+
+    return match[1];
+
   }
 };
 
