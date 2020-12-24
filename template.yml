@@ -52,6 +52,17 @@ Resources:
       CodeUri: src/
       Handler: authorizer.lambdaHandler
       Runtime: nodejs12.x
+
+  authLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: Node-Modules
+      Description: Node modules
+      ContentUri: ./lambda-layer
+      CompatibleRuntimes:
+        - nodejs12.x
+      LicenseInfo: 'Available under the MIT-0 license.'
+      RetentionPolicy: Retain
   
   TaskerUserPool:
     Type: AWS::Cognito::UserPool
