@@ -129,11 +129,11 @@ const LambdaUtils = {
           },
         ],
       },
-      context: [{
+      context: {
         stringKey: "stringval custom anything can go here",
         numberKey: 123,
         booleanKey: true
-      }],
+      },
     };
   
     return policy;
