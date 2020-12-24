@@ -5,13 +5,17 @@ Transform:
 - AWS::Serverless-2016-10-31
 
 Resources:
-  MyApi:
+  TaskerApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: dev
-      Cors: "'*'"
+      Cors:
+        AllowMethods: "'*'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
       Auth:
         DefaultAuthorizer: LambdaTokenAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: False
         Authorizers: 
           LambdaTokenAuthorizer:
             FunctionArn: !GetAtt lambdaAuthFunction.Arn
@@ -35,10 +39,10 @@ Resources:
           GSI1_NAME: GetListTasks_GSI1
           GSI2_NAME: GetAllTasks_GSI2
       Events:
-        HelloAPI:
+        Api:
           Type: Api
           Properties:
-            RestApiId: !Ref MyApi
+            RestApiId: !Ref TaskerApi
             Path: /users/{userId}/items
             Method: ANY
 
@@ -49,16 +53,6 @@ Resources:
       Handler: authorizer.lambdaHandler
       Runtime: nodejs12.x
   
-  GatewayResponse:
-    Type: AWS::ApiGateway::GatewayResponse
-    Properties:
-      ResponseParameters:
-        gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-        gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
-      ResponseType: MISSING_AUTHENTICATION_TOKEN
-      RestApiId: !Ref MyApi
-      StatusCode: '404'
-      
   TaskerUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
