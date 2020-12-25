@@ -51,19 +51,6 @@ Resources:
       CodeUri: src/
       Handler: authorizer.lambdaHandler
       Runtime: nodejs12.x
-      Layers:
-        - !Ref authDependeciesLayer
-
-  authDependeciesLayer:
-    Type: AWS::Serverless::LayerVersion
-    Properties:
-      LayerName: Auth-Dependecies-Layer
-      Description: Dependencies for lambdaAuthFunction
-      ContentUri: auth-lambda-layer/
-      CompatibleRuntimes:
-        - nodejs12.x
-      LicenseInfo: 'MIT'
-      RetentionPolicy: Retain
       
   TaskerUserPool:
     Type: AWS::Cognito::UserPool
