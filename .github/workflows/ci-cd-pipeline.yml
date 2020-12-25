@@ -4,10 +4,6 @@ on:
   push:
     branches: [master]
 
-defaults:
-  run:
-    working-directory: ./auth-lambda-layer/nodejs/
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
