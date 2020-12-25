@@ -6,7 +6,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./auth-lambda-layer/nodejs
+    working-directory: ./auth-lambda-layer/nodejs/
 
 jobs:
   deploy:
