@@ -133,7 +133,7 @@ const LambdaUtils = {
     return policy;
   },
 
-  __getToken: (event) => {
+  _getToken: (event) => {
 
     if (!event.type || event.type !== 'TOKEN') {
       throw new Error('Expected "event.type" parameter to have value "TOKEN"');
