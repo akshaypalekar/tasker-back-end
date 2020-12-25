@@ -28,10 +28,10 @@ jobs:
       - run: npm install aws-sdk --save
 
       - run: set -eo pipefail
-      - run: mkdir -p lib/nodejs
-      - run: rm -rf node_modules lib/nodejs/node_modules
+      - run: mkdir -p auth-lambda-layer/nodejs
+      - run: rm -rf node_modules auth-lambda-layer/nodejs/node_modules
       - run: npm install --production
-      - run: mv node_modules lib/nodejs/
+      - run: mv node_modules auth-lambda-layer/nodejs/
 
       - run: set -eo pipefail
       - run: sam package --output-template-file packaged.yaml --s3-bucket ${{ secrets.AWS_S3_BUCKET }} --region us-east-1
