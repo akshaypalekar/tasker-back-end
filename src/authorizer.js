@@ -21,7 +21,7 @@ exports.lambdaHandler = async (event) => {
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 10, // Default value
-        jwksUri: 'https://taskerdomain/.well-known/jwks.json'
+        jwksUri: 'https://taskerdomain.auth.us-east-1.amazoncognito.com/.well-known/jwks.json'
     });
 
     const getSigningKey = util.promisify(client.getSigningKey);
