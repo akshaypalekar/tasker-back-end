@@ -60,7 +60,7 @@ Resources:
     Properties:
       LayerName: Node-Modules
       Description: Node modules
-      ContentUri: ./lambda-layer
+      ContentUri: lambda-layer/
       CompatibleRuntimes:
         - nodejs12.x
       LicenseInfo: 'Available under the MIT-0 license.'
