@@ -64,8 +64,6 @@ Resources:
         - nodejs12.x
       LicenseInfo: 'MIT'
       RetentionPolicy: Retain
-    Metadata:
-      BuildMethod: nodejs12.x
       
   TaskerUserPool:
     Type: AWS::Cognito::UserPool

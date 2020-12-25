@@ -1,18 +1,35 @@
 {
-    "configurations": [
-        {
-            "type": "aws-sam",
-            "request": "direct-invoke",
-            "name": "tasker-back-end:lambdaHandlerFunction",
-            "invokeTarget": {
-                "target": "template",
-                "templatePath": "template.yml",
-                "logicalId": "lambdaHandlerFunction"
-            },
-            "lambda": {
-                "payload": {},
-                "environmentVariables": {}
-            }
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "lambdaHandlerFunction",
+      "type": "node",
+      "request": "attach",
+      "address": "localhost",
+      "port": 5858,
+      "localRoot": "${workspaceRoot}/.aws-sam/build/lambdaHandlerFunction",
+      "remoteRoot": "/var/task",
+      "protocol": "inspector",
+      "stopOnEntry": false,
+      "outFiles": [
+        "${workspaceRoot}/.aws-sam/build/lambdaHandlerFunction/app.js"
+      ],
+      "sourceMaps": true
+    },
+    {
+      "name": "lambdaAuthFunction",
+      "type": "node",
+      "request": "attach",
+      "address": "localhost",
+      "port": 5858,
+      "localRoot": "${workspaceRoot}/.aws-sam/build/lambdaAuthFunction",
+      "remoteRoot": "/var/task",
+      "protocol": "inspector",
+      "stopOnEntry": false,
+      "outFiles": [
+        "${workspaceRoot}/.aws-sam/build/lambdaAuthFunction/app.js"
+      ],
+      "sourceMaps": true
+    }
+  ]
 }
