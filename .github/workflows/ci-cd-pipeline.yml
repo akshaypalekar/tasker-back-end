@@ -25,8 +25,14 @@ jobs:
           node-version: 12.x
       
       - run: npm install
-      - run: npm install webpack webpack-cli typescript ts-loader aws-sam-webpack-plugin @types/aws-lambda --save-dev
       - run: npm install aws-sdk --save
-      - run: npm run-script build
+
+      - run: set -eo pipefail
+      - run: mkdir -p lib/nodejs
+      - run: rm -rf node_modules lib/nodejs/node_modules
+      - run: npm install --production
+      - run: mv node_modules lib/nodejs/
+
+      - run: set -eo pipefail
       - run: sam package --output-template-file packaged.yaml --s3-bucket ${{ secrets.AWS_S3_BUCKET }} --region us-east-1
       - run: sam deploy --template-file packaged.yaml --stack-name tasker-backend --s3-bucket ${{ secrets.AWS_S3_BUCKET }} --capabilities CAPABILITY_IAM --region us-east-1
