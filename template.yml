@@ -52,6 +52,8 @@ Resources:
       CodeUri: src/
       Handler: authorizer.lambdaHandler
       Runtime: nodejs12.x
+      Layers:
+        - Ref: authLayer
 
   authLayer:
     Type: AWS::Serverless::LayerVersion
