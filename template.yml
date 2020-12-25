@@ -57,9 +57,9 @@ Resources:
   authDependeciesLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      LayerName: Node-Modules
+      LayerName: Auth-Dependecies-Layer
       Description: Dependencies for lambdaAuthFunction
-      ContentUri: auth-lambda-layer/
+      ContentUri: auth-lambda-layer/nodejs
       # CompatibleRuntimes:
       #   - nodejs12.x
       # LicenseInfo: 'MIT'
