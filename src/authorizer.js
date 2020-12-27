@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const jwksClient = require('jwks-client');
+const jwksClient = require('jwks-rsa');
 const util = require('util');
 const LambdaUtils = require("./LambdaUtils");
 
