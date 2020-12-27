@@ -28,7 +28,7 @@ exports.lambdaHandler = async (event) => {
 
     return getSigningKey(decoded.header.kid)
         .then((key) => {
-            const signingKey = key.publicKey || key.rsaPublicKey;
+            const signingKey = key.getPublicKey();
             return jwt.verify(token, signingKey, jwtOptions);
         })
         .then((decoded) => ({
