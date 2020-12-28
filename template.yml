@@ -18,7 +18,11 @@ Resources:
         AddDefaultAuthorizerToCorsPreflight: False
         Authorizers: 
           LambdaTokenAuthorizer:
+            FunctionPayloadType: TOKEN
             FunctionArn: !GetAtt lambdaAuthFunction.Arn
+            Identity:
+              Header: 'Authorization'
+              ReauthorizeEvery: 20
             
   lambdaHandlerFunction:
     Type: AWS::Serverless::Function
