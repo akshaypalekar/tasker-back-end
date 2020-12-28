@@ -118,16 +118,14 @@ const LambdaUtils = {
 
   _buildIAMPolicy: (effect, resource) => {
     const policy = {
-      policyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: "execute-api:Invoke",
-            Effect: effect,
-            Resource: resource,
-          },
-        ],
-      },
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Action: "execute-api:Invoke",
+          Effect: effect,
+          Resource: resource,
+        },
+      ],
     };
 
     return policy;
