@@ -26,7 +26,7 @@ const LambdaUtils = {
     return params;
   },
 
-  _getQueryBuilder: (itemType, userId, listId) => {
+  _getQueryBuilder: (itemType, userId, listId, archiveFlag) => {
     let params = {}
 
     if (itemType == "list") {
@@ -59,7 +59,7 @@ const LambdaUtils = {
         KeyConditionExpression: `CreatedBy = :pValue and TaskArchive = :sValue`,
         ExpressionAttributeValues: {
           ":pValue": userId,
-          ":sValue": "TASK#false",
+          ":sValue": "TASK#" + archiveFlag,
         },
       };
     }

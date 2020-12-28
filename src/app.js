@@ -51,7 +51,7 @@ async function getItem(event, user) {
     const itemType = event.queryStringParameters.itemType || "";
     const archiveFlag = event.queryStringParameters.archiveFlag || "";
 
-    const params = LambdaUtils._getQueryBuilder(itemType, userId, listId);
+    const params = LambdaUtils._getQueryBuilder(itemType, userId, listId, archiveFlag);
 
     databaseResponse = await Dynamo._get(params).catch((err) => {
         console.error(`Unable to get items. Error JSON: ${err}`);
