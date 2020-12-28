@@ -22,7 +22,7 @@ Resources:
             FunctionArn: !GetAtt lambdaAuthFunction.Arn
             Identity:
               Header: 'Authorization'
-              ReauthorizeEvery: 20
+              ReauthorizeEvery: 0
             
   lambdaHandlerFunction:
     Type: AWS::Serverless::Function
