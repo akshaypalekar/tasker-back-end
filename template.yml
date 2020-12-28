@@ -9,7 +9,10 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: dev
-      Cors: "'*'"
+      Cors:
+        AllowMethods: "'*'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
       Auth:
         DefaultAuthorizer: LambdaTokenAuthorizer
         AddDefaultAuthorizerToCorsPreflight: False
