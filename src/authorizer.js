@@ -16,7 +16,7 @@ const client = jwksClient({
 });
 
 exports.lambdaHandler = async (event) => {
-    console.log("User has called the api " + JSON.stringify(event));
+    console.log("User event: " + JSON.stringify(event));
 
     const token = LambdaUtils._getToken(event);
 
@@ -31,11 +31,12 @@ exports.lambdaHandler = async (event) => {
     return getSigningKey(decoded.header.kid)
         .then((key) => {
             const signingKey = key.getPublicKey();
+            console.log("User signingKey: " + JSON.stringify(event));
             return jwt.verify(token, signingKey, jwtOptions);
         })
         .then((decoded) => ({
             principalId: decoded.sub,
-            policyDocument: LambdaUtils._buildIAMPolicy('Allow', event.methodArn),
+            policyDocument: LambdaUtils._buildIAMPolicy('Allow', event.methodArn)
         }));
 
 };
