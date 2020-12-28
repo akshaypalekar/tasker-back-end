@@ -4,7 +4,7 @@ const util = require('util');
 const LambdaUtils = require("./LambdaUtils");
 
 const jwtOptions = {
-    audience: "https://tddowj8otk.execute-api.us-east-1.amazonaws.com/dev",
+    audience: "19ul0dh7n2d7mdfdf5m6tnds9o",
     issuer: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_FBce5QEQc"
 };
 
