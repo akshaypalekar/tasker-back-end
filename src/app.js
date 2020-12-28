@@ -5,6 +5,7 @@ const LambdaUtils = require("./LambdaUtils");
 exports.lambdaHandler = async (event, context) => {
     console.info(`Request received: ${event.httpMethod}`);
     console.info("Request conext: " + JSON.stringify(context));
+    console.info("Request User: " + JSON.stringify(context.authorizer.user));
 
     switch (event.httpMethod) {
         case "POST":
