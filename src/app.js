@@ -1,7 +1,7 @@
 const Dynamo = require("./databaseManager");
 const Responses = require("./apiResponses");
 const LambdaUtils = require("./LambdaUtils");
-const { v4: uuidv4 } = require('uuid');
+const uuid  = require('uuid');
 
 exports.lambdaHandler = async (event) => {
     console.info(`Request received: ${event.httpMethod}`);
@@ -25,7 +25,7 @@ async function saveItem(event) {
     console.info(`saveItem function called with data: ${event.body}`);
 
     const body = JSON.parse(event.body);
-    body.ItemID = uuidv4();
+    body.ItemID = uuid.v4();
 
     //Add PK and SK to the item
     const params = LambdaUtils._createQueryBuilder(body);
