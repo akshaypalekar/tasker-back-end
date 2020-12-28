@@ -46,7 +46,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref TaskerApi
-            Path: /users/{userId}/items
+            Path: /items
             Method: ANY
 
   lambdaAuthFunction:

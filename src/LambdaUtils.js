@@ -26,7 +26,7 @@ const LambdaUtils = {
     return params;
   },
 
-  _getQueryBuilder: (itemType, userId, listId, archiveFlag) => {
+  _getQueryBuilder: (itemType, userId, listId) => {
     let params = {}
 
     if (itemType == "list") {
@@ -56,10 +56,10 @@ const LambdaUtils = {
       params = {
         TableName: TABLE_NAME,
         IndexName: GSI2_NAME,
-        KeyConditionExpression: `CreatedBy = :pValue and begins_with(TaskArchive, :sValue)`,
+        KeyConditionExpression: `CreatedBy = :pValue and TaskArchive = sValue`,
         ExpressionAttributeValues: {
           ":pValue": userId,
-          ":sValue": "TASK#" + archiveFlag,
+          ":sValue": "TASK#false",
         },
       };
     }

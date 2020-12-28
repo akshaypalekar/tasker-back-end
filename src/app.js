@@ -3,19 +3,19 @@ const Responses = require("./apiResponses");
 const LambdaUtils = require("./LambdaUtils");
 
 exports.lambdaHandler = async (event, context) => {
-    console.info(`Request received: ${event.httpMethod}`);
-    console.info("Request conext: " + JSON.stringify(context));
-    console.info("Request User: " + JSON.stringify(event.requestContext.authorizer.user));
+    console.info(`${event.httpMethod} request received from user ${event.requestContext.authorizer.user}`);
+    
+    const user = event.requestContext.authorizer.user;
 
     switch (event.httpMethod) {
         case "POST":
             return saveItem(event, context);
         case "GET":
-            return getItem(event);
+            return getItem(event, user);
         case "DELETE":
-            return deleteItem(event);
+            return deleteItem(event, user);
         case "PUT":
-            return updateItem(event);
+            return updateItem(event, user);
         default:
             return Responses._400(`Unsupported method "${event.httpMethod}"`);
     }
@@ -42,16 +42,16 @@ async function saveItem(event, context) {
     return Responses._200(response[0]);
 }
 
-async function getItem(event) {
+async function getItem(event, user) {
     console.info(`getItem function called`);
 
     let databaseResponse, response;
-    const userId = event.pathParameters.userId;
+    const userId = user;
     const listId = event.queryStringParameters.listId || "";
     const itemType = event.queryStringParameters.itemType || "";
     const archiveFlag = event.queryStringParameters.archiveFlag || "";
 
-    const params = LambdaUtils._getQueryBuilder(itemType, userId, listId, archiveFlag);
+    const params = LambdaUtils._getQueryBuilder(itemType, userId, listId);
 
     databaseResponse = await Dynamo._get(params).catch((err) => {
         console.error(`Unable to get items. Error JSON: ${err}`);
@@ -63,11 +63,11 @@ async function getItem(event) {
     return Responses._200(response);
 }
 
-async function deleteItem(event) {
+async function deleteItem(event, user) {
     console.info(`deleteItem function called with data`);
 
     let deleteParams;
-    const userId = event.pathParameters.userId;
+    const userId = user;
     const itemId = event.queryStringParameters.itemId;
     const listId = event.queryStringParameters.listId;
     const itemType = event.queryStringParameters.itemType;
@@ -113,7 +113,7 @@ async function deleteItem(event) {
     return Responses._200(`${itemType} deleted successfully`);
 }
 
-async function updateItem(event) {
+async function updateItem(event, user) {
     console.info(`saveItem function called with data: ${event.body}`);
 
     const body = JSON.parse(event.body);
