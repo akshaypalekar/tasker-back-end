@@ -56,7 +56,7 @@ const LambdaUtils = {
       params = {
         TableName: TABLE_NAME,
         IndexName: GSI2_NAME,
-        KeyConditionExpression: `CreatedBy = :pValue and TaskArchive = sValue`,
+        KeyConditionExpression: `CreatedBy = :pValue and TaskArchive = :sValue`,
         ExpressionAttributeValues: {
           ":pValue": userId,
           ":sValue": "TASK#false",
