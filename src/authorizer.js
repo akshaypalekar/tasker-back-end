@@ -16,6 +16,8 @@ const client = jwksClient({
 });
 
 exports.lambdaHandler = async (event) => {
+    console.log("User has called the api " + JSON.stringify(event));
+
     const token = LambdaUtils._getToken(event);
 
     const decoded = jwt.decode(token, { complete: true });
@@ -34,11 +36,6 @@ exports.lambdaHandler = async (event) => {
         .then((decoded) => ({
             principalId: decoded.sub,
             policyDocument: LambdaUtils._buildIAMPolicy('Allow', event.methodArn),
-            context: {
-                "stringKey": "stringval custom anything can go here",
-                "numberKey": 123,
-                "booleanKey": true,
-            }
         }));
 
 };

@@ -62,6 +62,16 @@ Resources:
       ContentUri: auth-lambda-layer/.
       CompatibleRuntimes:
         - nodejs12.x
+
+  GatewayResponse:
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      ResponseParameters:
+        gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+        gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+      ResponseType: MISSING_AUTHENTICATION_TOKEN
+      RestApiId: !Ref TaskerApi
+      StatusCode: '404'
       
   TaskerUserPool:
     Type: AWS::Cognito::UserPool
