@@ -31,12 +31,14 @@ exports.lambdaHandler = async (event) => {
     return getSigningKey(decoded.header.kid)
         .then((key) => {
             const signingKey = key.getPublicKey();
-            console.log("User signingKey: " + JSON.stringify(signingKey));
             return jwt.verify(token, signingKey, jwtOptions);
         })
         .then((decoded) => ({
             principalId: decoded.sub,
-            policyDocument: LambdaUtils._buildIAMPolicy('Allow', event.methodArn)
+            policyDocument: LambdaUtils._buildIAMPolicy('Allow', event.methodArn),
+            context: {
+                user: decoded.sub
+            }
         }));
 
 };
