@@ -1,14 +1,14 @@
 const Dynamo = require("./databaseManager");
 const Responses = require("./apiResponses");
 const LambdaUtils = require("./LambdaUtils");
-const uuid  = require('uuid');
 
-exports.lambdaHandler = async (event) => {
+exports.lambdaHandler = async (event, context) => {
     console.info(`Request received: ${event.httpMethod}`);
+    console.info("Request conext: " + JSON.stringify(context));
 
     switch (event.httpMethod) {
         case "POST":
-            return saveItem(event);
+            return saveItem(event, context);
         case "GET":
             return getItem(event);
         case "DELETE":
@@ -21,11 +21,11 @@ exports.lambdaHandler = async (event) => {
 };
 
 //Function to save items to the DynamoDB table
-async function saveItem(event) {
+async function saveItem(event, context) {
     console.info(`saveItem function called with data: ${event.body}`);
 
     const body = JSON.parse(event.body);
-    body.ItemID = uuid.v4();
+    body.ItemID = context.awsRequestId();
 
     //Add PK and SK to the item
     const params = LambdaUtils._createQueryBuilder(body);
