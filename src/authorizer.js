@@ -12,7 +12,7 @@ const client = jwksClient({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 10, // Default value
-    jwksUri: 'https://cognito-idp.us-east-1.amazonaws.com/ us-east-1_FBce5QEQc/.well-known/jwks.json'
+    jwksUri: 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_FBce5QEQc/.well-known/jwks.json'
 });
 
 exports.lambdaHandler = async (event) => {
