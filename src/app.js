@@ -25,7 +25,7 @@ async function saveItem(event, context) {
     console.info(`saveItem function called with data: ${event.body}`);
 
     const body = JSON.parse(event.body);
-    body.ItemID = context.awsRequestId();
+    body.ItemID = context.awsRequestId;
 
     //Add PK and SK to the item
     const params = LambdaUtils._createQueryBuilder(body);
