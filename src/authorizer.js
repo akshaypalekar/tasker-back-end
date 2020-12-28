@@ -34,7 +34,11 @@ exports.lambdaHandler = async (event) => {
         .then((decoded) => ({
             principalId: decoded.sub,
             policyDocument: LambdaUtils._buildIAMPolicy('Allow', event.methodArn),
-            context: { scope: decoded.scope }
+            context: {
+                "stringKey": "stringval custom anything can go here",
+                "numberKey": 123,
+                "booleanKey": true,
+            }
         }));
 
 };
