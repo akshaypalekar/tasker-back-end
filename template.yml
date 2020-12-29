@@ -12,7 +12,7 @@ Resources:
       Cors:
         AllowMethods: "'*'"
         AllowHeaders: "'*'"
-        AllowOrigin: "'*'"
+        AllowOrigin: "'http://taskercdkstack-taskerfrontendappbucket94613780-1nmeztpxwwe4f.s3-website-us-east-1.amazonaws.com','https://localhost:4200'"
       Auth:
         DefaultAuthorizer: LambdaTokenAuthorizer
         AddDefaultAuthorizerToCorsPreflight: False
