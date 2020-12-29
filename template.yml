@@ -13,6 +13,8 @@ Resources:
         AllowMethods: "'*'"
         AllowHeaders: "'*'"
         AllowOrigin: "'http://taskercdkstack-taskerfrontendappbucket94613780-1nmeztpxwwe4f.s3-website-us-east-1.amazonaws.com','https://localhost:4200'"
+        AllowCredentials: True
+        MaxAge: "'600'"
       Auth:
         DefaultAuthorizer: LambdaTokenAuthorizer
         AddDefaultAuthorizerToCorsPreflight: False
